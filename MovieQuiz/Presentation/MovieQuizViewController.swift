@@ -25,14 +25,12 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true)
         ]
     
-    
-    
-    struct ViewModel {
+   private struct ViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
-    struct QuizStepViewModel {
+   private struct QuizStepViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
@@ -43,12 +41,12 @@ final class MovieQuizViewController: UIViewController {
             self.questionNumber = questionNumber
         }
     }
-    struct QuizResultsViewModel {
+    private struct QuizResultsViewModel {
         let title: String
         let text: String
         let buttonText: String
     }
-    struct QuizQuestion {
+   private struct QuizQuestion {
         let image: String
         let text: String
         let correctAnswer: Bool
@@ -63,7 +61,6 @@ final class MovieQuizViewController: UIViewController {
             questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
         return questionStep
     }
-    
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
@@ -135,3 +132,5 @@ final class MovieQuizViewController: UIViewController {
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
+
+// Подскажите, в приложении есть баг: когда быстро наживаешь на одну кнопку, delay в 1 секунду перестает учитываться и можно буквально разом пройти квиз. В алерте будет показано что правильных ответов 12 из 10. Как можно было б это исправить?
