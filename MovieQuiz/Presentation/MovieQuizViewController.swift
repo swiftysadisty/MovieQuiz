@@ -1,15 +1,20 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
+    @IBOutlet weak private var stackBtn: UIStackView!
     @IBOutlet weak private var counterLabel: UILabel!
     @IBOutlet weak private var imageView: UIImageView!
     @IBOutlet weak private var textView: UILabel!
+    @IBOutlet weak var yesBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         let currentQuestion = questions[currentQuestionIndex]
         let convert = convert(model: currentQuestion)
         show(quiz: convert)
     }
+    //Создаю переменую для контролирования скорости нажатия кнопок
+    private var isAnswerProcessing = false
+    
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private let questions: [QuizQuestion] = [
@@ -84,6 +89,11 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
+        //применяю метод Демпфирование
+        guard !isAnswerProcessing else { return }
+        isAnswerProcessing = true
+        
+        
         if isCorrect == true {
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 8
@@ -98,11 +108,14 @@ final class MovieQuizViewController: UIViewController {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnswerProcessing = false
                 self.showNextQuestionOrResults()
             }
     }
     
+    
     private func showNextQuestionOrResults() {
+        
         if currentQuestionIndex == questions.count - 1 {
             let text = "Ваш результат: \(correctAnswers)/10"
                     let viewModel = QuizResultsViewModel(
@@ -133,4 +146,4 @@ final class MovieQuizViewController: UIViewController {
     }
 }
 
-// Подскажите, в приложении есть баг: когда быстро наживаешь на одну кнопку, delay в 1 секунду перестает учитываться и можно буквально разом пройти квиз. В алерте будет показано что правильных ответов 12 из 10. Как можно было б это исправить?
+// C isEnabled что то не получилось, нагуглил про Демпфирование, полезная штука оказывается! Баг пофикшен
