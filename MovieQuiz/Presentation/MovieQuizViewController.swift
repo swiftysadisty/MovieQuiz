@@ -1,15 +1,20 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
+    @IBOutlet weak private var stackBtn: UIStackView!
     @IBOutlet weak private var counterLabel: UILabel!
     @IBOutlet weak private var imageView: UIImageView!
     @IBOutlet weak private var textView: UILabel!
+    @IBOutlet weak var yesBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         let currentQuestion = questions[currentQuestionIndex]
         let convert = convert(model: currentQuestion)
         show(quiz: convert)
     }
+    //Создаю переменую для контролирования скорости нажатия кнопок
+    private var isAnswerProcessing = false
+    
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private let questions: [QuizQuestion] = [
@@ -25,14 +30,12 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true)
         ]
     
-    
-    
-    struct ViewModel {
+   private struct ViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
-    struct QuizStepViewModel {
+   private struct QuizStepViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
@@ -43,12 +46,12 @@ final class MovieQuizViewController: UIViewController {
             self.questionNumber = questionNumber
         }
     }
-    struct QuizResultsViewModel {
+    private struct QuizResultsViewModel {
         let title: String
         let text: String
         let buttonText: String
     }
-    struct QuizQuestion {
+   private struct QuizQuestion {
         let image: String
         let text: String
         let correctAnswer: Bool
@@ -63,7 +66,6 @@ final class MovieQuizViewController: UIViewController {
             questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
         return questionStep
     }
-    
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
@@ -87,6 +89,11 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
+        //применяю метод Демпфирование
+        guard !isAnswerProcessing else { return }
+        isAnswerProcessing = true
+        
+        
         if isCorrect == true {
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 8
@@ -101,11 +108,14 @@ final class MovieQuizViewController: UIViewController {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnswerProcessing = false
                 self.showNextQuestionOrResults()
             }
     }
     
+    
     private func showNextQuestionOrResults() {
+        
         if currentQuestionIndex == questions.count - 1 {
             let text = "Ваш результат: \(correctAnswers)/10"
                     let viewModel = QuizResultsViewModel(
@@ -135,3 +145,5 @@ final class MovieQuizViewController: UIViewController {
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
+
+// C isEnabled что то не получилось, нагуглил про Демпфирование, полезная штука оказывается! Баг пофикшен
